@@ -8,6 +8,17 @@ model.study('std1').run
 display(Q1)
 display(Q2)
 
+%% Blood Vessel 
+model = mphload('models/simple-vessel.mph');
+y = [];
+
+for x = 0.1:0.1:1
+    model.param.set('R', x);
+    model.study('std1').run;
+    [r] = mphint2(model, {'spf.U'}, 'surface', [1,2,5,6]);
+    y = [y; r];
+end 
+
 %% Rectangular Channel 
 model = mphload('models/rectangular-channel.mph');
 
@@ -29,3 +40,4 @@ function y = fit(x, model)
 
     y = Q1;
 end
+
