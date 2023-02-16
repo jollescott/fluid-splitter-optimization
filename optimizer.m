@@ -20,7 +20,13 @@ for x = X
     Y = [Y; r];
 end 
 
-plot(X, Y);
+%% Reynolds
+model = mphload('models/reynoldsopt.mph');
+obj = @(x) reynoldsfit(x, model)
+a = [0 0 0 0 0 0 0 0]
+b = [0.99 0.99 0.99 0.99 1 1 1 1]
+x = ga(obj, 8, [], [], [], [], a, b);
+
 %% Rectangular Channel 
 model = mphload('models/rectangular-channel.mph');
 
