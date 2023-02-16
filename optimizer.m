@@ -10,30 +10,30 @@ display(Q2)
 
 %% Blood Vessel 
 model = mphload('models/simple-vessel.mph');
-y = [];
+Y = [];
+X = 1:10;
 
-for x = 0.1:0.1:1
+for x = X
     model.param.set('R', x);
     model.study('std1').run;
-    [r] = mphint2(model, {'spf.U'}, 'surface', [1,2,5,6]);
-    y = [y; r];
+    [r] = mphint2(model, 'spf.U', 'surface', 'selection', 3);
+    Y = [Y; r];
 end 
 
+plot(X, Y);
 %% Rectangular Channel 
 model = mphload('models/rectangular-channel.mph');
 
 obj = @(x) fit(x, model);
-x = ga(obj, 1, [], [], [], [], 0.0001, 0.9999);
+x = ga(obj, 2, [], [], [1 1], 10, [0.5 0.5], [9.5 9.5]);
 
 
 function y = fit(x, model) 
-    display(x)
-    display(x(1))
     model.param.set('B_W', x(1));
+    model.param.set('B_H', x(2));
     model.study('std1').run
 
-    Q1 = mphmean(model,'spf.U', 'volume');
-    display(Q1)
+    Q1 =  mphint2(model, 'spf.U', 'surface', 'selection', 5);
 
     y = 1 / Q1;
 end
