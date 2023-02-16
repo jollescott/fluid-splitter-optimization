@@ -19,11 +19,18 @@ for x = 0.1:0.1:1
     y = [y; r];
 end 
 
+%% Reynolds
+model = mphload('models/reynoldsopt.mph');
+obj = @(x) reynoldsfit(x, model)
+a = [0 0 0 0 0 0 0 0]
+b = [0.99 0.99 0.99 0.99 1 1 1 1]
+x = ga(obj, 8, [], [], [], [], a, b);
+
 %% Rectangular Channel 
 model = mphload('models/rectangular-channel.mph');
 
 obj = @(x) fit(x, model);
-x = ga(obj, 1, [], [], [], [], 0.0001, 0.9999);
+x = ga(obj, 1, [], [], [], [], [0.5 00.5], 0.9999);
 
 
 function y = fit(x, model) 
