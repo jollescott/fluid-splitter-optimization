@@ -30,16 +30,10 @@ x = ga(obj, 8, [], [], [], [], a, b);
 %% Rectangular Channel 
 model = mphload('models/rectangular-channel.mph');
 
-obj = @(x) fit(x, model);
-x = ga(obj, 2, [], [], [1 1], 10, [0.5 0.5], [9.5 9.5]);
+ga_options = optimoptions('ga', 'PopulationSize', 15, 'MaxGenerations', 10);
+
+obj = @(x) rectangularfit(x, model);
+x = ga(obj, 2, [], [], [1 1], 10, [0.5 0.5], [9.5 9.5], [], ga_options);
+disp(x)
 
 
-function y = fit(x, model) 
-    model.param.set('B_W', x(1));
-    model.param.set('B_H', x(2));
-    model.study('std1').run
-
-    Q1 =  mphint2(model, 'spf.U', 'surface', 'selection', 5);
-
-    y = 1 / Q1;
-end
