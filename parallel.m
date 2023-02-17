@@ -1,39 +1,70 @@
-np = 2;
-nw = 2;
+clear all
+
+np = 8;
+nw = 3;
+
+pool = gcp('nocreate');
+
+if ~isempty(pool)
+    delete(pool)
+end
 
 pool = parpool(nw);
 
-comsol = getComsolPath();
+comsol = getComsolExec();
 
-for i = 0:nw
+for i = 1:nw
     port = 2035 + i;
-    cmd = [comsol, ' -autosave off -np ', num2str(np), ' server -silent -port ',num2str(port), ' &'];
-    system(cmd)
+    cmd = comsol + ' -autosave off -np ' + num2str(np) + ' -multi on -silent -port ' + num2str(port) + ' &';
+    system(cmd);
 
     pause(5);
 end
 
-ga_options = optimoptions('ga', 'PopulationSize', 4, 'MaxGenerations', 4, 'UseParallel',true);
+ga_options = optimoptions('ga', 'PopulationSize', 10, 'MaxGenerations', 5, 'UseParallel',true);
 
-obj = @(x) fit(x);
-x = ga(obj, 2, [], [], [1 1], 10, [0.5 0.5], [9.5 9.5], [], ga_options);
+tic;
 
-delete(pool)
+x = ga(@(x) parallelFit(x), 2, [], [], [1 1], 10, [0.5 0.5], [9.5 9.5], [], ga_options);
 
-function y = fit(x) 
+f = parfevalOnAll(pool, @disconnect, 0);
+wait(f);
+
+if isunix
+    system('pkill -f comsol');
+end
+
+delete(pool);
+
+pt = toc;
+
+disp('Solution:')
+disp(x)
+disp(pt);
+
+function y = parallelFit(x) 
+
+    global model
+
     wId = get(getCurrentTask, 'ID');
 
-    if isempty(wId)
-        port = 2035;
-    else
-        port = 2035 + wId;
+    if isempty(model) 
+        if isempty(wId)
+            port = 2036;
+        else
+            port = 2035 + wId;
+        end
+    
+        mphstart(port)
+        model = mphload('models/rectangular-channel.mph');
     end
 
-    mphstart(port)
-    import com.comsol.model.util.*
+    y = rectangularfit(x, model);   
+end
 
-    model = mphload('models/rectangular-channel.mph');
-    y = rectangularfit(x, model);
-   
+function disconnect() 
+    import com.comsol.model.util.*
     ModelUtil.disconnect;
+
+    clear all
 end
