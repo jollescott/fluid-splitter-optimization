@@ -1,6 +1,6 @@
 function P = getComsolPath() 
     if ispc
-        P = getenv('COMSOL_PATH');
+        P = ['"', getenv('COMSOL_PATH'), '"'];
     else
         P = "comsol";
     end
