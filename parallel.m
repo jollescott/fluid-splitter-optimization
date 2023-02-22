@@ -1,6 +1,4 @@
-function parallel(model_name, fit_function) 
-    clear all
-    
+function parallel(model_name, fit_function)     
     np = 8;
     nw = 3;
     
@@ -13,10 +11,11 @@ function parallel(model_name, fit_function)
     pool = parpool(nw);
     
     comsol = getComsolExec();
+    disp(comsol)
     
     for i = 1:nw
         port = 2035 + i;
-        cmd = comsol + ' -autosave off -np ' + num2str(np) + ' -multi on -silent -port ' + num2str(port) + ' &';
+        cmd = [comsol ' -autosave off -np ' num2str(np) ' -multi on -silent -port ' num2str(port) ' &'];
         system(cmd);
     
         pause(5);
