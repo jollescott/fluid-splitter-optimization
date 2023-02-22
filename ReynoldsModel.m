@@ -1,7 +1,7 @@
-classdef Reynoldsmodel < Model
+classdef ReynoldsModel < Model
 
     methods
-        function obj = Reynoldsmodel()
+        function obj = ReynoldsModel()
             obj.comsolmodel = "models/reynoldsopt.mph";
             obj.nvars = 8;
             obj.A = [];
@@ -28,7 +28,7 @@ classdef Reynoldsmodel < Model
                 f = a;
             catch error
                 disp(x)
-                disp(error)
+                disp(error.message)
                 f = inf;
             end
         end

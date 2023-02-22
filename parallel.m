@@ -1,5 +1,5 @@
 function parallel(model)
-np = 8;
+np = 10;
 nw = 3;
 
 pool = gcp('nocreate');
@@ -11,11 +11,11 @@ end
 pool = parpool(nw);
 
 comsol = getComsolExec();
-disp(comsol)
 
 for i = 1:nw
     port = 2035 + i;
-    cmd = [comsol ' -autosave off -np ' num2str(np) ' -multi on -silent -port ' num2str(port) ' &'];
+    cmd = strcat(comsol,' -autosave off -np', {' '}, num2str(np), ' -multi on -silent -port', {' '}, num2str(port), ' &');
+    disp(cmd);
     system(cmd);
 
     pause(5);
