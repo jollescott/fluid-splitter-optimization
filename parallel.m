@@ -1,4 +1,6 @@
 function parallel(model)
+clear global
+
 np = 10;
 nw = 3;
 
@@ -21,7 +23,7 @@ for i = 1:nw
     pause(5);
 end
 
-ga_options = optimoptions('ga', 'PopulationSize', 10, 'MaxGenerations', 5, 'UseParallel',true);
+ga_options = optimoptions('ga', 'PopulationSize', 15, 'MaxGenerations', 10, 'UseParallel',true);
 
 tic;
 
